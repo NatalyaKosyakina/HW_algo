@@ -16,34 +16,35 @@ public class RedBlackTree<T extends Comparable<T>>{
         }
         else {
             add(value, root);
-            rebalance(root);
+            root = rebalance(root);
             root.red = false;
         }
     }
     private boolean add(T value, Node node){
         if (node.value.compareTo(value) == 0){
             return false;
-        } else {
-            if (node.value.compareTo(value) > 0) {
-                if (node.leftchild == null) {
-                    node.leftchild = new Node();
-                    node.leftchild.value = value;
-                    return true;
-                } else {
-                    add(value, node.leftchild);
-                }
+        }
+        if (node.value.compareTo(value) > 0) {
+            if (node.leftchild == null) {
+                node.leftchild = new Node();
+                node.leftchild.value = value;
+                return true;
             } else {
+                boolean result = add(value, node.leftchild);
+                node.leftchild = rebalance(node.leftchild);
+                return result;
+            }
+            } else { // если значение не меньше текущей ноды
                 if (node.rightchild != null) {
-                    add(value, node.rightchild);
-                    rebalance(root);
+                    boolean result = add(value, node.rightchild);
+                    node.rightchild = rebalance(node.rightchild);
+                    return result;
                 } else {
                     node.rightchild = new Node();
                     node.rightchild.value = value;
                     return true;
                 }
-            }
         }
-        return false;
     }
 
     public boolean find(T value){
@@ -62,26 +63,28 @@ public class RedBlackTree<T extends Comparable<T>>{
         } else {return find(value, node.rightchild);}
     }
 
-    private void rebalance(Node node){
+    private Node rebalance(Node node){
         Node result = node;
-        boolean imbalanced = true;
-        while (imbalanced) {
+        boolean imbalanced;
+        do {
             imbalanced = false;
-            if (result.rightchild != null && result.rightchild.red &&
-                    (result.leftchild == null || !result.red)) {
+            if (result.rightchild != null && result.rightchild.red
+                    && (result.leftchild == null || !result.leftchild.red)) {
                 imbalanced = true;
                 result = rigthturn(result);
             }
-            if (result.leftchild != null && result.red &&
-                    result.leftchild.leftchild != null && result.leftchild.leftchild.red) {
+            if (result.leftchild != null && result.leftchild.red
+                    && result.leftchild.leftchild != null && result.leftchild.leftchild.red) {
                 imbalanced = true;
                 result = leftturn(result);
             }
-            if (result.leftchild != null && result.red && result.rightchild != null && result.rightchild.red) {
+            if (result.leftchild != null && result.leftchild.red
+                    && result.rightchild != null && result.rightchild.red) {
                 imbalanced = true;
                 colorswap(result);
             }
-        }
+        } while (imbalanced);
+        return result;
     }
 
     private Node leftturn(Node node){
@@ -109,4 +112,5 @@ public class RedBlackTree<T extends Comparable<T>>{
         node.rightchild.red = false;
         node.red = true;
     }
+
 }

@@ -2,6 +2,7 @@ package org.example;
 
 public class Main {
     public static void main(String[] args) {
+        // BinaryTree tree = new BinaryTree();
         RedBlackTree tree = new RedBlackTree();
 
         tree.insert(5);
@@ -15,6 +16,7 @@ public class Main {
 
         System.out.println(tree.find(7));
         System.out.println(tree.find(9));
+        System.out.println(tree);
     }
 }
 
